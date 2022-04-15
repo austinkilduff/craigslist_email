@@ -11,6 +11,6 @@ You need:
 
     craigslist_url = "https://..."
     email_address = "example@website.com"
-    project_dir = "/home/me/craigslist_email"
+    project_dir = "/home/me/craigslist_email/"
     
 I'm using this as a handy statusbar node with dwmblocks. But you could also use cron, systemd timers, or run it manually.
