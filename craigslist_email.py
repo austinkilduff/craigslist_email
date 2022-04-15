@@ -10,7 +10,7 @@ from config import craigslist_url, email_address, project_dir
 db_filename = project_dir + "db.json"
 db = austinDB.Database(db_filename)
 
-if "cars" not in [table["table_name"] for table in db.db]:
+if "cars" not in [table.table_name] for table in db.tables]:
     db.create_table("cars", ["url", "text", "time", "price", "distance", "status"])
 cars_table = db.read_table("cars")
 db_car_url_rows = cars_table.read(["url"])
