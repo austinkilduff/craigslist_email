@@ -10,14 +10,14 @@ from config import craigslist_url, email_address, project_dir
 db_filename = project_dir + "db.json"
 db = austinDB.Database(db_filename)
 
-if "cars" not in db.get_table_names():
-    db.add_table("cars", ["url", "text", "time", "price", "distance", "status"])
-cars_table = db.get_table("cars")
+if "cars" not in db.read_table_names():
+    db.create_table("cars", ["url", "text", "time", "price", "distance", "status"])
+cars_table = db.read_table("cars")
 db_car_url_rows = cars_table.read(["url"])
 db_car_statusless_rows = cars_table.read(["url", "text", "time", "price", "distance"])
 
-db.add_table("email_cars", ["url", "text", "time", "price", "distance", "status"])
-email_cars_table = db.get_table("email_cars")
+db.create_table("email_cars", ["url", "text", "time", "price", "distance", "status"])
+email_cars_table = db.read_table("email_cars")
 
 # Get the craigslist page
 r = requests.get(craigslist_url)
@@ -64,7 +64,7 @@ if len(email_car_rows) > 0:
     with open(email_filename) as email_f:
         subprocess.Popen(args, stdin=email_f, stdout=sys.stdout, stderr=sys.stderr)
 
-    db.remove_table("email_cars")
+    db.delete_table("email_cars")
     os.remove(email_filename)
 
 # Print the number of cars that were emailed
