@@ -34,16 +34,18 @@ for result in results:
     status = ""
     cl_car = [url, text, time, price, distance, status]
 
-    # If the car's URL is not in the database, add the car to the cars table and the email cars table
-    if url not in [db_car_url_row[0] for db_car_url_row in db_car_url_rows]:
-        cl_car[-1] = "New"
-        cars_table.create(cl_car)
-        email_cars_table.create(cl_car)
-    # If the car's URL is in the database, but something other than status is different, update the cars table and add the car to the email cars table
-    elif cl_car[:-1] not in db_car_statusless_rows:
-        cl_car[-1] = "Updated"
-        cars_table.update(["url", "text", "time", "price", "distance", "status"], cl_car, ["url"], [(lambda u: url == u)])
-        email_cars_table.create(cl_car)
+    distance_param = float(craigslist_url.split("search_distance=")[1].split("&")[0])
+    if ("mi" in distance and float(distance[:-2]) <= distance_param) or ("km" in distance and float(distance[:-2]) <= 1.6 * distance_param):
+        # If the car's URL is not in the database, add the car to the cars table and the email cars table
+        if url not in [db_car_url_row[0] for db_car_url_row in db_car_url_rows]:
+            cl_car[-1] = "New"
+            cars_table.create(cl_car)
+            email_cars_table.create(cl_car)
+        # If the car's URL is in the database, but something other than status is different, update the cars table and add the car to the email cars table
+        elif cl_car[:-1] not in db_car_statusless_rows:
+            cl_car[-1] = "Updated"
+            cars_table.update(["url", "text", "time", "price", "distance", "status"], cl_car, ["url"], [(lambda u: url == u)])
+            email_cars_table.create(cl_car)
 
 # Get the cars to be emailed, build the email body, send the email, and clean up the email cars table
 email_car_rows = email_cars_table.read()
@@ -68,4 +70,4 @@ if len(email_car_rows) > 0:
     os.remove(email_filename)
 
 # Print the number of cars that were emailed
-print(str(len(email_car_rows)))
+# print(str(len(email_car_rows)))
