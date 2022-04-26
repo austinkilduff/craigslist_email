@@ -47,6 +47,15 @@ for result in results:
             cars_table.update(["url", "text", "time", "price", "distance", "status"], cl_car, ["url"], [(lambda u: url == u)])
             email_cars_table.create(cl_car)
 
+# Find cars that have been removed from Craigslist, add them to the email cars table, and delete them from the cars table
+for db_car_url_row in db_car_url_rows:
+    db_car_url = db_car_url_row[0]
+    if db_car_url not in [result.find("h3", class_="result-heading").find("a")["href"] for result in results]:
+        db_car = cars_table.read(["url", "text", "time", "price", "distance", "status"], ["url"], [(lambda url: url == db_car_url)])[0]
+        db_car[-1] = "Removed"
+        email_cars_table.create(db_car)
+        cars_table.delete(["url"], [(lambda url: url == db_car_url)])
+
 # Get the cars to be emailed, build the email body, send the email, and clean up the email cars table
 email_car_rows = email_cars_table.read()
 if len(email_car_rows) > 0:
